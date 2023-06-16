@@ -1,5 +1,5 @@
 from typing import Annotated, Union
-from fastapi import APIRouter, Cookie, Depends, File, UploadFile
+from fastapi import APIRouter, Cookie, Depends, File, Form, UploadFile
 
 router = APIRouter(
     prefix="/users",
@@ -53,3 +53,16 @@ async def uploadFileWithUploadFile(file: UploadFile):
 @router.post("/multiple-files")
 async def uploadMultiFiles(files: list[UploadFile]):
     return list(map(lambda i: i.filename, files))
+
+
+@router.post("/form-and-files")
+async def create_file(
+    file: Annotated[bytes, File()],
+    fileb: Annotated[UploadFile, File()],
+    token: Annotated[str, Form()],
+):
+    return {
+        "file_size": len(file),
+        "token": token,
+        "fileb_content_type": fileb.filename,
+    }
