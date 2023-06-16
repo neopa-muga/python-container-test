@@ -1,5 +1,5 @@
 from typing import Annotated, Union
-from fastapi import APIRouter, Cookie, Depends
+from fastapi import APIRouter, Cookie, Depends, File, UploadFile
 
 router = APIRouter(
     prefix="/users",
@@ -38,3 +38,18 @@ async def read_user_me():
 @router.get("/{username}", tags=["users"])
 async def read_user(username: str):
     return {"username": username}
+
+
+@router.post("/file", summary="with File")
+async def uploadFile(file: Annotated[bytes, File()]):
+    return {"file_size": len(file)}
+
+
+@router.post("/upload-file", summary="with UploadFile")
+async def uploadFileWithUploadFile(file: UploadFile):
+    return {"file_name": file.filename}
+
+
+@router.post("/multiple-files")
+async def uploadMultiFiles(files: list[UploadFile]):
+    return list(map(lambda i: i.filename, files))
